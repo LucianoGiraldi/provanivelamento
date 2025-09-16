@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+#ignorar db
+dbdata/
+
 # Logs
 logs
 *.log
