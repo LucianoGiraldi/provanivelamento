@@ -41,7 +41,7 @@ export default function App() {
       await api.post("/cursos", {
         nome: form.nome,
         cargaHoraria: Number(form.cargaHoraria),
-        dataInicio: form.dataInicio, 
+        dataInicio: form.dataInicio,
       });
       setForm({ nome: "", cargaHoraria: "", dataInicio: "" });
       await load();
@@ -56,7 +56,7 @@ export default function App() {
       setErro("");
       await api.del(`/cursos/${id}`);
       await load();
-      setReloadTick(t => t + 1); 
+      setReloadTick((t) => t + 1);
     } catch (e) {
       console.error(e);
       setErro(e.message || "Falha ao excluir curso");
@@ -83,8 +83,8 @@ export default function App() {
       if (!disciplinaNome) return setErro("Digite o nome da disciplina.");
       await api.post(`/cursos/${id}/disciplinas`, { nome: disciplinaNome });
       setDisciplinaNome("");
-      await load();              
-      setReloadTick(t => t + 1);  
+      await load();
+      setReloadTick((t) => t + 1);
     } catch (e) {
       console.error(e);
       setErro(e.message || "Falha ao adicionar disciplina");
@@ -92,42 +92,48 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <h1 className="text-4xl font-extrabold">Cursos & Disciplinas</h1>
+    <div className="min-h-screen bg-gray-950 text-white">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <h1 className="text-3xl sm:text-5xl font-extrabold">Cursos & Disciplinas</h1>
 
         <BannerErro msg={erro} />
 
-        {/* Criar curso */}
-        <form onSubmit={criarCurso} className="bg-gray-900 p-4 rounded-xl grid gap-3 md:grid-cols-4">
+        {/* FORM: empilha no mobile, vira linha no >= lg */}
+        <form
+          onSubmit={criarCurso}
+          className="bg-gray-900 p-4 rounded-xl grid gap-3
+                     grid-cols-1
+                     lg:grid-cols-[2fr_1fr_1fr_auto]"
+        >
           <input
-            className="p-2 rounded bg-gray-800"
+            className="p-3 rounded bg-gray-800 w-full"
             placeholder="Nome do curso"
             value={form.nome}
             onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
           />
           <input
             type="number"
-            className="p-2 rounded bg-gray-800"
+            inputMode="numeric"
+            className="p-3 rounded bg-gray-800 w-full"
             placeholder="Carga Horária"
             value={form.cargaHoraria}
             onChange={(e) => setForm((f) => ({ ...f, cargaHoraria: e.target.value }))}
           />
           <input
             type="date"
-            className="p-2 rounded bg-gray-800"
+            className="p-3 rounded bg-gray-800 w-full"
             value={form.dataInicio}
             onChange={(e) => setForm((f) => ({ ...f, dataInicio: e.target.value }))}
           />
-          <button className="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-500 transition">
+          <button className="w-full lg:w-auto px-6 py-3 rounded bg-emerald-600 hover:bg-emerald-500 transition font-medium">
             Criar Curso
           </button>
         </form>
 
-        {/* Campo para nova disciplina */}
-        <div className="bg-gray-900 p-4 rounded-xl flex gap-3 items-center">
+        {/* Campo global para disciplina: empilha no mobile */}
+        <div className="bg-gray-900 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center gap-3">
           <input
-            className="flex-1 p-2 rounded bg-gray-800"
+            className="flex-1 p-3 rounded bg-gray-800 w-full"
             placeholder="Nome da nova disciplina"
             value={disciplinaNome}
             onChange={(e) => setDisciplinaNome(e.target.value)}
@@ -137,54 +143,64 @@ export default function App() {
           </span>
         </div>
 
-        {/* Lista de cursos */}
-        <ul className="space-y-4">
-          {cursos.map((c) => (
-            <li key={c.id} className="bg-gray-900 rounded-xl p-4 space-y-3">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <div className="text-lg font-semibold">{c.nome}</div>
-                  <div className="text-sm text-gray-300">
-                    CH: {c.cargaHoraria} • Início: {String(c.dataInicio).slice(0, 10)}
+        {/* GRID responsivo: 1 / 2 / 3 colunas */}
+        {cursos.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-gray-700 bg-gray-900 p-8 text-center">
+            <p className="text-base sm:text-lg text-gray-300 font-medium">Nenhum curso cadastrado ainda.</p>
+            <p className="text-xs sm:text-sm text-gray-400 mt-1">
+              Preencha o formulário acima e clique em <span className="font-semibold">“Criar Curso”</span>.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {cursos.map((c) => (
+              <div key={c.id} className="bg-gray-900 rounded-xl p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div>
+                    <div className="text-xl font-semibold break-words">{c.nome}</div>
+                    <div className="text-sm text-gray-300">
+                      CH: {c.cargaHoraria} • Início: {String(c.dataInicio).slice(0, 10)}
+                    </div>
+                  </div>
+                  <div className="flex flex-col xs:flex-row sm:flex-row gap-2">
+                    <button
+                      onClick={() => addDisciplina(c.id)}
+                      className="px-3 py-2 rounded bg-blue-600 hover:bg-blue-500 text-sm"
+                    >
+                      + Disciplina
+                    </button>
+                    <button
+                      onClick={() => deletarCurso(c.id)}
+                      className="px-3 py-2 rounded bg-red-600 hover:bg-red-500 text-sm"
+                    >
+                      Excluir
+                    </button>
                   </div>
                 </div>
-                <div className="flex gap-2">
+
+                {/* atualizar CH: inputs maiores no mobile */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    placeholder="Nova Carga Horária"
+                    className="p-3 rounded bg-gray-800 w-full sm:w-40"
+                    value={editCH[c.id] ?? ""}
+                    onChange={(e) => setEditCH((s) => ({ ...s, [c.id]: e.target.value }))}
+                  />
                   <button
-                    onClick={() => addDisciplina(c.id)}
-                    className="px-3 py-1 rounded bg-blue-600 hover:bg-blue-500 text-sm"
+                    onClick={() => atualizarCargaHoraria(c.id)}
+                    className="px-3 py-2 rounded bg-amber-600 hover:bg-amber-500 text-sm"
                   >
-                    + Disciplina
-                  </button>
-                  <button
-                    onClick={() => deletarCurso(c.id)}
-                    className="px-3 py-1 rounded bg-red-600 hover:bg-red-500 text-sm"
-                  >
-                    Excluir
+                    Atualizar
                   </button>
                 </div>
-              </div>
 
-              {/* atualizar CH */}
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  placeholder="Nova Carga Horária"
-                  className="p-2 rounded bg-gray-800 w-45"
-                  value={editCH[c.id] ?? ""}
-                  onChange={(e) => setEditCH((s) => ({ ...s, [c.id]: e.target.value }))}
-                />
-                <button
-                  onClick={() => atualizarCargaHoraria(c.id)}
-                  className="px-3 py-1 rounded bg-amber-600 hover:bg-amber-500 text-sm"
-                >
-                  Atualizar
-                </button>
+                <Disciplinas cursoId={c.id} reload={reloadTick} />
               </div>
-
-              <Disciplinas cursoId={c.id} reload={reloadTick} />
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -205,7 +221,7 @@ function Disciplinas({ cursoId, reload }) {
     }
   }
 
-  useEffect(() => { carregar(); }, [cursoId, reload]); // 🔥 NOVO: recarrega quando o tick muda
+  useEffect(() => { carregar(); }, [cursoId, reload]);
 
   if (erro) return <div className="text-sm text-red-300">Erro: {erro}</div>;
   if (!disciplinas.length) return <div className="text-sm text-gray-400">Sem disciplinas ainda.</div>;
@@ -236,7 +252,7 @@ function LinhaDisciplina({ d, cursoId, onChange }) {
 
   return (
     <div className="flex items-center justify-between bg-gray-800 rounded p-2">
-      <span>{d.nome}</span>
+      <span className="break-words">{d.nome}</span>
       <div className="flex items-center gap-2">
         {erro && <span className="text-xs text-red-300">{erro}</span>}
         <button onClick={remover} className="px-2 py-1 rounded bg-red-600 hover:bg-red-500 text-xs">
