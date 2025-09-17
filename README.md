@@ -30,6 +30,31 @@
 ```bash
 $ npm install
 ```
+# 📚 Projeto Nivelamento - Cursos & Disciplinas
+
+Aplicação fullstack desenvolvida com **NestJS + PostgreSQL + Drizzle** no backend e **React + Vite + TailwindCSS** no frontend.  
+Permite cadastrar **Cursos** e suas **Disciplinas**, realizar operações de CRUD e visualizar tudo em uma interface web.
+
+---
+
+## 🚀 Tecnologias
+
+- **Backend**
+  - [NestJS](https://nestjs.com/) (Node.js + TypeScript)
+  - PostgreSQL (rodando em Docker com imagem `postgres:alpine`)
+  - Drizzle ORM
+- **Frontend**
+  - React (Vite + JavaScript/TypeScript)
+  - TailwindCSS
+  - Axios para consumo da API
+- **Infra**
+  - Docker Compose para subir o banco
+  - Git + GitHub para versionamento
+
+---
+
+## 📂 Estrutura do projeto
+
 
 ## Compile and run the project
 
